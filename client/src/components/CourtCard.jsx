@@ -7,6 +7,12 @@ import { Layers, DollarSign, Calendar } from 'lucide-react';
 const SURFACE_LABEL = { clay: 'Ceglasta', hard: 'Twarda', grass: 'Trawa' };
 const SURFACE_COLOR = { clay: 'text-orange-400', hard: 'text-blue-400', grass: 'text-tennis-400' };
 const SURFACE_EMOJI = { clay: '🟧', hard: '🟦', grass: '🟩' };
+const SURFACE_BORDER = { clay: 'border-orange-500/30 hover:border-orange-500/80', hard: 'border-blue-500/30 hover:border-blue-500/80', grass: 'border-tennis-500/30 hover:border-tennis-500/80' };
+const SURFACE_IMAGE = {
+  clay: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1f0?auto=format&fit=crop&q=80&w=600',
+  hard: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&q=80&w=600',
+  grass: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&q=80&w=600'
+};
 
 export default function CourtCard({ court, onDeleted }) {
   const { isGuest, canManageCourts } = useAuth();
@@ -26,23 +32,31 @@ export default function CourtCard({ court, onDeleted }) {
   };
 
   return (
-    <div className="card p-6 flex flex-col gap-4 hover:border-tennis-700 transition-colors duration-200 group">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="font-bold text-lg text-[#e8f5ee] group-hover:text-tennis-400 transition-colors">
-            {court.name}
-          </h3>
-          <span className={`text-sm font-medium ${SURFACE_COLOR[court.surface]}`}>
-            {SURFACE_EMOJI[court.surface]} {SURFACE_LABEL[court.surface]}
-          </span>
+    <div className={`card flex flex-col hover:-translate-y-1 transition-all duration-300 overflow-hidden border ${SURFACE_BORDER[court.surface]} group`}>
+      {/* Image */}
+      <div 
+        className="h-48 w-full bg-cover bg-center border-b border-[#1e3028]"
+        style={{ backgroundImage: `url(${court.image_url || SURFACE_IMAGE[court.surface]})` }}
+      />
+      
+      <div className="p-5 flex flex-col gap-4 flex-1">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="font-bold text-xl text-[#e8f5ee] group-hover:text-tennis-400 transition-colors">
+              {court.name}
+            </h3>
+            <span className={`text-sm font-medium ${SURFACE_COLOR[court.surface]}`}>
+              {SURFACE_EMOJI[court.surface]} {SURFACE_LABEL[court.surface]}
+            </span>
+          </div>
+          <div className="flex items-end flex-col">
+            <span className="text-tennis-400 font-extrabold text-2xl leading-none">
+              {Number(court.price_per_hour).toFixed(0)} <span className="text-base">zł</span>
+            </span>
+            <span className="text-xs text-muted font-normal mt-1">za godzinę</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-tennis-400 font-bold text-xl">
-          <DollarSign size={16} />
-          {Number(court.price_per_hour).toFixed(0)}
-          <span className="text-xs text-muted font-normal">/h</span>
-        </div>
-      </div>
 
       {/* Description */}
       {court.description && (
@@ -82,6 +96,7 @@ export default function CourtCard({ court, onDeleted }) {
             {deleting ? '...' : 'Usuń'}
           </button>
         )}
+      </div>
       </div>
     </div>
   );

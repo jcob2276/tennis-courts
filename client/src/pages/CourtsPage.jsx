@@ -58,17 +58,21 @@ export default function CourtsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-extrabold text-[#e8f5ee]">Korty tenisowe</h1>
-          <p className="text-muted text-sm mt-1">{courts.length} kortów dostępnych</p>
+      {/* Hero Header */}
+      <div className="relative rounded-2xl overflow-hidden mb-10 bg-[#0d1a10] border border-[#1e3028]">
+        <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1595435934249-5df7ed86e1f0?auto=format&fit=crop&q=80&w=1200')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f0d] via-[#0a0f0d]/90 to-transparent" />
+        <div className="relative p-8 sm:p-12 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="max-w-xl">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-[#e8f5ee] tracking-tight mb-3">Znajdź swój idealny kort</h1>
+            <p className="text-muted text-lg">Zarezerwuj jeden z {courts.length} profesjonalnych kortów i ciesz się grą na najwyższym poziomie.</p>
+          </div>
+          {canManageCourts && (
+            <button className="btn-primary whitespace-nowrap shadow-xl shadow-tennis-900/20 h-12 px-6" onClick={() => setShowAddForm(true)}>
+              <Plus size={18} className="mr-2" /> Dodaj nowy kort
+            </button>
+          )}
         </div>
-        {canManageCourts && (
-          <button className="btn-primary" onClick={() => setShowAddForm(true)}>
-            <Plus size={15} /> Dodaj kort
-          </button>
-        )}
       </div>
 
       {/* Filters */}

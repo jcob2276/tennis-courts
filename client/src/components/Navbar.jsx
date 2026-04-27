@@ -41,10 +41,11 @@ export default function Navbar() {
 
           {/* Weather badge */}
           {weather && (
-            <span className="flex items-center gap-1.5 text-xs text-muted border border-[#1e3028] rounded-full px-3 py-1">
-              <CloudSun size={13} className="text-tennis-400" />
-              {weather.temp}°C · {weather.description}
-              {weather.playable && <Zap size={11} className="text-tennis-400" />}
+            <span className="flex items-center gap-2 text-sm text-[#e8f5ee] bg-[#0d1a10] border border-[#1e3028] rounded-lg px-4 py-1.5 shadow-sm">
+              <CloudSun size={18} className={weather.playable ? "text-tennis-400" : "text-gray-400"} />
+              <span className="font-semibold">{weather.temp}°C</span>
+              <span className="text-muted hidden lg:inline">· {weather.description}</span>
+              {weather.playable && <Zap size={14} className="text-tennis-400 ml-1" title="Idealne warunki do gry" />}
             </span>
           )}
 

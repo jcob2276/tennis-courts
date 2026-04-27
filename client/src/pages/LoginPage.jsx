@@ -55,17 +55,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-br from-[#0a0f0d] via-[#0d1a10] to-[#0a0f0d]">
-      {/* Logo */}
-      <div className="mb-10 text-center">
-        <div className="text-5xl mb-3">🎾</div>
-        <h1 className="text-3xl font-extrabold text-[#e8f5ee] tracking-tight">TennisCourts</h1>
-        <p className="text-muted text-sm mt-1">System rezerwacji kortów tenisowych</p>
+    <div className="min-h-screen flex bg-[#0a0f0d]">
+      {/* Left Side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&q=80&w=1600')" }} />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f0d]/40 to-[#0a0f0d]" />
+        <div className="absolute bottom-16 left-16 right-16">
+          <h2 className="text-5xl font-extrabold text-white mb-6 leading-tight">Twój serw,<br/>Twój kort.</h2>
+          <p className="text-xl text-white/80 font-medium">Najszybszy system rezerwacji kortów tenisowych w mieście.</p>
+        </div>
       </div>
 
-      <div className="w-full max-w-md">
-        {/* Test accounts */}
-        <div className="card p-5 mb-6">
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-4 py-12 sm:px-12 bg-gradient-to-br from-[#0a0f0d] via-[#0d1a10] to-[#0a0f0d]">
+        <div className="w-full max-w-md">
+          {/* Logo */}
+          <div className="mb-10 text-center lg:text-left">
+            <div className="text-5xl mb-4 lg:hidden">🎾</div>
+            <h1 className="text-4xl font-extrabold text-[#e8f5ee] tracking-tight flex items-center gap-3 lg:justify-start justify-center">
+              <span className="hidden lg:inline text-4xl">🎾</span>
+              TennisCourts
+            </h1>
+            <p className="text-muted text-base mt-2">Zaloguj się, aby zarządzać rezerwacjami.</p>
+          </div>
+
+          {/* Test accounts */}
+          <div className="card p-5 mb-6">
           <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
             🧪 Konta testowe — kliknij aby zalogować
           </p>
@@ -149,12 +164,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-muted mt-5">
+          <p className="text-center text-sm text-muted mt-6">
             Nie masz konta?{' '}
-            <Link to="/register" className="text-tennis-400 hover:underline font-medium">
+            <Link to="/register" className="text-tennis-400 hover:text-tennis-300 hover:underline font-medium transition-colors">
               Zarejestruj się
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </div>
