@@ -19,7 +19,7 @@ export default function Navbar() {
 
   const logout = () => {
     localStorage.removeItem('token');
-    navigate('/');
+    navigate('/login');
     window.location.reload();
   };
 
@@ -28,9 +28,9 @@ export default function Navbar() {
       <div className="mx-auto max-w-6xl flex items-center justify-between px-4 h-16">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-tennis-400 text-lg">
+        <Link to="/courts" className="flex items-center gap-2 font-bold text-tennis-400 text-lg">
           <span className="text-2xl">🎾</span>
-          <span>TennisCourts</span>
+          <span className="hidden sm:inline text-[#e8f5ee]">TennisCourts</span>
         </Link>
 
         {/* Desktop nav */}

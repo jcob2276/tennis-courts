@@ -94,7 +94,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-muted mt-5">
           Masz już konto?{' '}
-          <Link to="/" className="text-tennis-400 hover:underline font-medium">Zaloguj się</Link>
+          <Link to="/login" className="text-tennis-400 hover:underline font-medium">Zaloguj się</Link>
         </p>
       </div>
     </div>

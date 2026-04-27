@@ -10,7 +10,7 @@ import useAuth from './hooks/useAuth';
 // Protected route — przekieruj gości na login
 function Protected({ children, roles }) {
   const { user, role } = useAuth();
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   if (roles && !roles.includes(role)) return <Navigate to="/courts" replace />;
   return children;
 }

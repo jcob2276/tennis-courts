@@ -17,7 +17,7 @@ export default function AdminPage() {
   const [loading, setLoading]         = useState(true);
 
   useEffect(() => {
-    if (!isAdmin) { navigate('/'); return; }
+    if (!isAdmin) { navigate('/courts'); return; }
     Promise.all([
       api.get('/courts'),
       api.get('/reservations'),

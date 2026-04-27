@@ -81,7 +81,7 @@ export default function CourtCard({ court, onDeleted, onReserve }) {
         ) : (
           <button
             className="btn-outline flex-1 text-sm"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/login')}
           >
             Zaloguj się, by zarezerwować
           </button>
