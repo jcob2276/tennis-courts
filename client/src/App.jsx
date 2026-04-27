@@ -22,7 +22,8 @@ export default function App() {
         <Navbar />
         <main>
           <Routes>
-            <Route path="/"            element={<LoginPage />} />
+            <Route path="/"            element={<Navigate to="/courts" replace />} />
+            <Route path="/login"       element={<LoginPage />} />
             <Route path="/register"    element={<RegisterPage />} />
             <Route path="/courts"      element={<CourtsPage />} />
             <Route path="/reservations" element={

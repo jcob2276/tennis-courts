@@ -22,13 +22,18 @@ export default function CourtsPage() {
   const [surface, setSurface]         = useState('');
   const [search, setSearch]           = useState('');
   const [showForm, setShowForm]       = useState(false);
+  const [selectedCourtId, setSelectedCourtId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm]         = useState({ name:'', surface:'clay', price_per_hour:'', description:'' });
   const [addError, setAddError]       = useState('');
   const [adding, setAdding]           = useState(false);
 
-  // Pre-fill courtId when navigated from CourtCard "Zarezerwuj"
-  const preselect = location.state?.courtId;
+  useEffect(() => {
+    if (location.state?.courtId) {
+      setSelectedCourtId(location.state.courtId);
+      setShowForm(true);
+    }
+  }, [location.state]);
 
   const fetchCourts = () => {
     setLoading(true);
@@ -60,7 +65,7 @@ export default function CourtsPage() {
     <div className="max-w-6xl mx-auto px-4 py-10">
       {/* Hero Header */}
       <div className="relative rounded-2xl overflow-hidden mb-10 bg-[#0d1a10] border border-[#1e3028]">
-        <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1595435934249-5df7ed86e1f0?auto=format&fit=crop&q=80&w=1200')] bg-cover bg-center" />
+        <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1599586120429-48281b6f0ece?auto=format&fit=crop&q=80&w=1200')] bg-cover bg-center" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f0d] via-[#0a0f0d]/90 to-transparent" />
         <div className="relative p-8 sm:p-12 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="max-w-xl">
@@ -147,19 +152,23 @@ export default function CourtsPage() {
               key={court.id}
               court={court}
               onDeleted={id => setCourts(cs => cs.filter(c => c.id !== id))}
+              onReserve={(id) => {
+                setSelectedCourtId(id);
+                setShowForm(true);
+              }}
             />
           ))}
         </div>
       )}
 
       {/* Reservation modal */}
-      {(showForm || preselect) && (
+      {showForm && (
         <ReservationForm
-          courtId={preselect}
-          courtName={courts.find(c => c.id === preselect)?.name}
-          courtPrice={courts.find(c => c.id === preselect)?.price_per_hour}
-          onClose={() => setShowForm(false)}
-          onSuccess={() => { setShowForm(false); }}
+          courtId={selectedCourtId}
+          courtName={courts.find(c => c.id === selectedCourtId)?.name}
+          courtPrice={courts.find(c => c.id === selectedCourtId)?.price_per_hour}
+          onClose={() => { setShowForm(false); setSelectedCourtId(null); }}
+          onSuccess={() => { setShowForm(false); setSelectedCourtId(null); }}
         />
       )}
     </div>

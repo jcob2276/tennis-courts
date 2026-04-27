@@ -9,12 +9,12 @@ const SURFACE_COLOR = { clay: 'text-orange-400', hard: 'text-blue-400', grass: '
 const SURFACE_EMOJI = { clay: '🟧', hard: '🟦', grass: '🟩' };
 const SURFACE_BORDER = { clay: 'border-orange-500/30 hover:border-orange-500/80', hard: 'border-blue-500/30 hover:border-blue-500/80', grass: 'border-tennis-500/30 hover:border-tennis-500/80' };
 const SURFACE_IMAGE = {
-  clay: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1f0?auto=format&fit=crop&q=80&w=600',
+  clay: 'https://images.unsplash.com/photo-1599586120429-48281b6f0ece?auto=format&fit=crop&q=80&w=600',
   hard: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&q=80&w=600',
   grass: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&q=80&w=600'
 };
 
-export default function CourtCard({ court, onDeleted }) {
+export default function CourtCard({ court, onDeleted, onReserve }) {
   const { isGuest, canManageCourts } = useAuth();
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
@@ -74,7 +74,7 @@ export default function CourtCard({ court, onDeleted }) {
         {!isGuest ? (
           <button
             className="btn-primary flex-1 text-sm"
-            onClick={() => navigate('/reservations', { state: { courtId: court.id, courtName: court.name } })}
+            onClick={() => onReserve(court.id)}
           >
             Zarezerwuj
           </button>

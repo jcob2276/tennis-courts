@@ -112,6 +112,25 @@ export default function LoginPage() {
                 </div>
               </div>
             ))}
+            
+            {/* Guest Role */}
+            <div className="flex items-center justify-between rounded-xl bg-[#0a0f0d] border border-gray-800/50 px-4 py-2.5 mt-1">
+              <div className="flex items-center gap-3">
+                <span className="badge-user bg-gray-500/10 text-gray-400 border-gray-500/20">Gość</span>
+                <div>
+                  <p className="text-xs text-[#e8f5ee]">Konto niezalogowane</p>
+                  <p className="text-xs text-muted">Tylko podgląd kortów</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/courts')}
+                  className="btn-outline text-xs px-3 py-1.5"
+                >
+                  Wejdź
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

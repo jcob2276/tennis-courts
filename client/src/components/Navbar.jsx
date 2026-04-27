@@ -50,7 +50,7 @@ export default function Navbar() {
           )}
 
           {isGuest ? (
-            <Link to="/" className="btn-primary text-xs px-4 py-2">Zaloguj się</Link>
+            <Link to="/login" className="btn-primary text-xs px-4 py-2">Zaloguj się</Link>
           ) : (
             <div className="flex items-center gap-3">
               <span className={ROLE_CLASS[role]}>{ROLE_LABELS[role]}</span>
