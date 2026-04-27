@@ -1,4 +1,4 @@
-import { MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Phone, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -17,11 +17,11 @@ export default function Footer() {
               Najnowocześniejszy kompleks tenisowy w Warszawie. Profesjonalne korty, oświetlenie LED i pasja do sportu.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-muted hover:text-tennis-400 transition-colors">
-                <Facebook size={20} />
+              <a href="#" className="text-muted hover:text-tennis-400 font-bold transition-colors">
+                FB
               </a>
-              <a href="#" className="text-muted hover:text-tennis-400 transition-colors">
-                <Instagram size={20} />
+              <a href="#" className="text-muted hover:text-tennis-400 font-bold transition-colors">
+                IG
               </a>
             </div>
           </div>
