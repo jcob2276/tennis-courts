@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg:       #0a0f0d;
+    --surface:  #111a15;
+    --border:   #1e3028;
+    --text:     #e8f5ee;
+    --muted:    #6b8f78;
+    --accent:   #22c55e;
+    --accent-h: #16a34a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  ::selection { background: #22c55e44; color: #e8f5ee; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+}
+
+@layer components {
+  /* ── Card ─────────────────────────── */
+  .card {
+    @apply rounded-2xl border border-[#1e3028] bg-[#111a15] shadow-xl;
+  }
+
+  /* ── Buttons ──────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5
+           text-sm font-semibold transition-all duration-200 cursor-pointer
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-tennis-500 text-white hover:bg-tennis-600 active:scale-95
+           shadow-[0_0_20px_rgba(34,197,94,0.25)];
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-[#6b8f78] hover:bg-[#1e3028] hover:text-[#e8f5ee];
+  }
+  .btn-danger {
+    @apply btn bg-red-600/20 text-red-400 hover:bg-red-600/40 border border-red-600/30;
+  }
+  .btn-outline {
+    @apply btn border border-[#1e3028] text-[#e8f5ee] hover:border-tennis-500 hover:text-tennis-400;
+  }
+
+  /* ── Input ────────────────────────── */
+  .input {
+    @apply w-full rounded-xl border border-[#1e3028] bg-[#0a0f0d] px-4 py-2.5
+           text-sm text-[#e8f5ee] placeholder:text-[#3d5c49] outline-none
+           focus:border-tennis-500 focus:ring-2 focus:ring-tennis-500/20 transition;
+  }
+
+  /* ── Label ────────────────────────── */
+  .label {
+    @apply block text-xs font-medium text-[#6b8f78] mb-1.5 uppercase tracking-wider;
+  }
+
+  /* ── Badge ────────────────────────── */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .badge-user  { @apply badge bg-blue-500/15  text-blue-400  border border-blue-500/20;  }
+  .badge-mod   { @apply badge bg-amber-500/15 text-amber-400 border border-amber-500/20; }
+  .badge-admin { @apply badge bg-red-500/15   text-red-400   border border-red-500/20;   }
+  .badge-green { @apply badge bg-tennis-500/15 text-tennis-400 border border-tennis-500/20; }
+
+  /* ── Surface ──────────────────────── */
+  .surface   { background-color: var(--surface); }
+  .border-c  { border-color: var(--border); }
+  .text-muted { color: var(--muted); }
+}

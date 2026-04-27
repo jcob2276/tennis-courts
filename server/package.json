@@ -1,0 +1,26 @@
+{
+  "name": "tennis-courts-server",
+  "version": "1.0.0",
+  "description": "Tennis court reservation system — Express API",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "db:schema": "psql -U postgres -d tennis_courts -f db/schema.sql",
+    "db:seed": "node db/seed.js"
+  },
+  "dependencies": {
+    "axios": "^1.15.2",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^12.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
