@@ -69,8 +69,11 @@ export default function CourtsPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f0d] via-[#0a0f0d]/90 to-transparent" />
         <div className="relative p-8 sm:p-12 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="max-w-xl">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-[#e8f5ee] tracking-tight mb-3">Znajdź swój idealny kort</h1>
-            <p className="text-muted text-lg">Zarezerwuj jeden z {courts.length} profesjonalnych kortów i ciesz się grą na najwyższym poziomie.</p>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-[#e8f5ee] tracking-tight mb-3">
+              Kompleks Tenisowy <br className="hidden sm:block" />
+              <span className="text-tennis-400">Warszawianka</span>
+            </h1>
+            <p className="text-muted text-lg">Największy profesjonalny obiekt w stolicy. Zarezerwuj jeden z {courts.length} kortów, ciesz się najlepszą nawierzchnią i oświetleniem LED na poziomie turniejowym.</p>
           </div>
           {canManageCourts && (
             <button className="btn-primary whitespace-nowrap shadow-xl shadow-tennis-900/20 h-12 px-6" onClick={() => setShowAddForm(true)}>
@@ -160,6 +163,32 @@ export default function CourtsPage() {
           ))}
         </div>
       )}
+
+      {/* Udogodnienia (Amenities) */}
+      <div className="mt-16 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">🚗</div>
+            <h4 className="font-bold text-[#e8f5ee]">Darmowy Parking</h4>
+            <p className="text-xs text-muted mt-2">Dla wszystkich graczy</p>
+          </div>
+          <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">🚿</div>
+            <h4 className="font-bold text-[#e8f5ee]">Szatnie i Prysznice</h4>
+            <p className="text-xs text-muted mt-2">Nowoczesne zaplecze sanitarne</p>
+          </div>
+          <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">🎾</div>
+            <h4 className="font-bold text-[#e8f5ee]">Wypożyczalnia</h4>
+            <p className="text-xs text-muted mt-2">Rakiety i piłki w recepcji</p>
+          </div>
+          <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">💡</div>
+            <h4 className="font-bold text-[#e8f5ee]">Oświetlenie LED</h4>
+            <p className="text-xs text-muted mt-2">Komfortowa gra wieczorami</p>
+          </div>
+        </div>
+      </div>
 
       {/* Google Maps Embed */}
       <div className="mt-16 rounded-2xl overflow-hidden border border-[#1e3028] bg-[#0a0f0d]">

@@ -34,15 +34,7 @@ export default function ReservationForm({ courtId, courtName, courtPrice, onClos
     }
   }, [selectedCourt, date]);
 
-  const days = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    return {
-      dateStr: d.toISOString().split('T')[0],
-      dayName: i === 0 ? 'Dziś' : i === 1 ? 'Jutro' : d.toLocaleDateString('pl-PL', { weekday: 'short' }),
-      dayNum: d.getDate()
-    };
-  });
+  // Array dni usunięto zgodnie z prośbą o prosty kalendarz
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,30 +92,16 @@ export default function ReservationForm({ courtId, courtName, courtPrice, onClos
             </div>
           )}
 
-          {/* Pasek z datami */}
+          {/* Kalendarz */}
           <div>
             <label className="label mb-3 flex items-center gap-1"><CalendarDays size={14} /> Wybierz dzień</label>
-            <div 
-              className="flex gap-3 overflow-x-auto pb-2 snap-x"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {days.map(d => {
-                const active = date === d.dateStr;
-                return (
-                  <button
-                    key={d.dateStr}
-                    type="button"
-                    onClick={() => setDate(d.dateStr)}
-                    className={`snap-start shrink-0 flex flex-col items-center justify-center w-20 h-20 rounded-2xl border transition-all ${
-                      active ? 'bg-tennis-500/20 border-tennis-500 text-tennis-400' : 'bg-[#0a0f0d] border-[#1e3028] text-muted hover:border-tennis-700 hover:text-white'
-                    }`}
-                  >
-                    <span className="text-xs uppercase font-medium">{d.dayName}</span>
-                    <span className={`text-2xl font-bold ${active ? 'text-white' : ''}`}>{d.dayNum}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <input
+              type="date"
+              min={initialDate}
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              className="input w-full sm:w-1/2 cursor-pointer bg-[#0d1a10] border-[#1e3028] text-[#e8f5ee] focus:border-tennis-500 focus:ring-1 focus:ring-tennis-500 transition-colors"
+            />
           </div>
 
           {/* Czas i Długość trwania */}

@@ -6,6 +6,7 @@ import CourtsPage from './pages/CourtsPage';
 import ReservationsPage from './pages/ReservationsPage';
 import AdminPage from './pages/AdminPage';
 import useAuth from './hooks/useAuth';
+import Footer from './components/Footer';
 
 // Protected route — przekieruj gości na login
 function Protected({ children, roles }) {
@@ -18,9 +19,9 @@ function Protected({ children, roles }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-[#0a0f0d]">
+      <div className="min-h-screen bg-[#0a0f0d] flex flex-col">
         <Navbar />
-        <main>
+        <main className="flex-1 flex flex-col">
           <Routes>
             <Route path="/"            element={<Navigate to="/courts" replace />} />
             <Route path="/login"       element={<LoginPage />} />
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/courts" replace />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </BrowserRouter>
   );
