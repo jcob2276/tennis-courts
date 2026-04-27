@@ -100,6 +100,10 @@ export default function ReservationForm({ courtId, courtName, courtPrice, onClos
               min={initialDate}
               value={date}
               onChange={e => setDate(e.target.value)}
+              onClick={e => {
+                try { e.target.showPicker(); } catch (err) {}
+              }}
+              style={{ colorScheme: 'dark' }}
               className="input w-full sm:w-1/2 cursor-pointer bg-[#0d1a10] border-[#1e3028] text-[#e8f5ee] focus:border-tennis-500 focus:ring-1 focus:ring-tennis-500 transition-colors"
             />
           </div>
