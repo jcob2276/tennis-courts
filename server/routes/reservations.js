@@ -36,6 +36,28 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
+// ── GET /api/reservations/availability ─────────────────────────
+// Zwraca zajęte przedziały czasowe dla danego kortu i daty
+router.get('/availability', verifyToken, async (req, res) => {
+  try {
+    const { court_id, date } = req.query;
+    if (!court_id || !date) {
+      return res.status(400).json({ error: 'Wymagane parametry court_id oraz date' });
+    }
+    
+    const result = await pool.query(`
+      SELECT start_time, end_time 
+      FROM reservations 
+      WHERE court_id = $1 AND date = $2 AND status = 'CONFIRMED'
+    `, [court_id, date]);
+    
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Błąd serwera podczas pobierania dostępności' });
+  }
+});
+
 // ── POST /api/reservations — USER, MOD, ADMIN ───────────────────
 router.post('/', verifyToken, requireRole('USER', 'MOD', 'ADMIN'), [
   body('court_id').isInt({ min: 1 }).withMessage('Nieprawidłowe ID kortu'),

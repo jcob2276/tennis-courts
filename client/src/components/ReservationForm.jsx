@@ -20,10 +20,19 @@ export default function ReservationForm({ courtId, courtName, courtPrice, onClos
   const [duration, setDuration]   = useState(1);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState('');
+  const [bookedSlots, setBookedSlots] = useState([]);
 
   useEffect(() => {
     if (!courtId) api.get('/courts').then(r => setCourts(r.data)).catch(() => {});
   }, [courtId]);
+
+  useEffect(() => {
+    if (selectedCourt && date) {
+      api.get('/reservations/availability', { params: { court_id: selectedCourt, date } })
+        .then(res => setBookedSlots(res.data))
+        .catch(() => setBookedSlots([]));
+    }
+  }, [selectedCourt, date]);
 
   const days = Array.from({ length: 14 }, (_, i) => {
     const d = new Date(today);
@@ -122,18 +131,39 @@ export default function ReservationForm({ courtId, courtName, courtPrice, onClos
             <div className="flex-1">
               <label className="label mb-3 flex items-center gap-1"><Clock size={14} /> Czas rozpoczęcia</label>
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                {HOURS.map(h => (
-                  <button
-                    key={h}
-                    type="button"
-                    onClick={() => setStart(h)}
-                    className={`py-2 text-sm rounded-xl border transition-all ${
-                      startTime === h ? 'bg-tennis-500 text-white border-tennis-500 font-bold' : 'bg-[#0a0f0d] border-[#1e3028] text-muted hover:border-tennis-700 hover:text-white'
-                    }`}
-                  >
-                    {h}
-                  </button>
-                ))}
+                {HOURS.map(h => {
+                  const disabled = bookedSlots.some(slot => {
+                    const [sh, sm] = h.split(':').map(Number);
+                    const reqStartMins = sh * 60 + sm;
+                    const reqEndMins = reqStartMins + duration * 60;
+                    
+                    const [bsh, bsm] = slot.start_time.split(':').map(Number);
+                    const bookedStartMins = bsh * 60 + bsm;
+                    
+                    const [beh, bem] = slot.end_time.split(':').map(Number);
+                    const bookedEndMins = beh * 60 + bem;
+                    
+                    return !(reqEndMins <= bookedStartMins || reqStartMins >= bookedEndMins);
+                  });
+
+                  return (
+                    <button
+                      key={h}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => setStart(h)}
+                      className={`py-2 text-sm rounded-xl border transition-all ${
+                        disabled 
+                          ? 'bg-gray-800/10 border-gray-800/30 text-gray-600 cursor-not-allowed opacity-40'
+                          : startTime === h 
+                            ? 'bg-tennis-500 text-white border-tennis-500 font-bold shadow-[0_0_15px_rgba(34,197,94,0.1)]' 
+                            : 'bg-[#0a0f0d] border-[#1e3028] text-muted hover:border-tennis-700 hover:text-white'
+                      }`}
+                    >
+                      {h}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

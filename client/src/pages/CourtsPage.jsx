@@ -161,6 +161,26 @@ export default function CourtsPage() {
         </div>
       )}
 
+      {/* Google Maps Embed */}
+      <div className="mt-16 rounded-2xl overflow-hidden border border-[#1e3028] bg-[#0a0f0d]">
+        <div className="p-6 border-b border-[#1e3028]">
+          <h3 className="text-xl font-bold text-[#e8f5ee] flex items-center gap-2">
+            📍 Nasza lokalizacja
+          </h3>
+          <p className="text-sm text-muted mt-1">Kompleks Tenisowy Warszawianka, ul. Piaseczyńska 71, Warszawa</p>
+        </div>
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2445.6963499427357!2d21.021008615951664!3d52.19349887975317!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47192d1b827e8a1d%3A0x6b4f70c53d489b0a!2sWarszawianka%20Tennis%20Club!5e0!3m2!1sen!2spl!4v1689239841234!5m2!1sen!2spl" 
+          width="100%" 
+          height="400" 
+          style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }} 
+          allowFullScreen="" 
+          loading="lazy" 
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Google Maps Location"
+        ></iframe>
+      </div>
+
       {/* Reservation modal */}
       {showForm && (
         <ReservationForm
