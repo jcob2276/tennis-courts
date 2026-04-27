@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
-import { X, CalendarDays, Clock } from 'lucide-react';
+import { X, CalendarDays, Clock, Check } from 'lucide-react';
 
 const HOURS = Array.from({ length: 14 }, (_, i) => {
   const h = String(i + 7).padStart(2, '0');
   return `${h}:00`;
-}); // 07:00 → 20:00
+});
 
-export default function ReservationForm({ courtId, courtName, onClose, onSuccess }) {
+const DURATIONS = [1, 1.5, 2];
+
+export default function ReservationForm({ courtId, courtName, courtPrice, onClose, onSuccess }) {
   const [courts, setCourts]       = useState([]);
   const [selectedCourt, setSC]    = useState(courtId || '');
-  const [date, setDate]           = useState('');
+  
+  const today = new Date();
+  const initialDate = today.toISOString().split('T')[0];
+  const [date, setDate]           = useState(initialDate);
   const [startTime, setStart]     = useState('');
-  const [endTime, setEnd]         = useState('');
+  const [duration, setDuration]   = useState(1);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState('');
 
@@ -20,16 +25,31 @@ export default function ReservationForm({ courtId, courtName, onClose, onSuccess
     if (!courtId) api.get('/courts').then(r => setCourts(r.data)).catch(() => {});
   }, [courtId]);
 
-  // Ustaw minimalną datę na dziś
-  const today = new Date().toISOString().split('T')[0];
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    return {
+      dateStr: d.toISOString().split('T')[0],
+      dayName: i === 0 ? 'Dziś' : i === 1 ? 'Jutro' : d.toLocaleDateString('pl-PL', { weekday: 'short' }),
+      dayNum: d.getDate()
+    };
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!selectedCourt || !date || !startTime || !endTime) {
+    if (!selectedCourt || !date || !startTime || !duration) {
       setError('Uzupełnij wszystkie pola');
       return;
     }
+    
+    // Obliczanie czasu końcowego z uwzględnieniem połówkowych godzin
+    const [h, m] = startTime.split(':').map(Number);
+    const totalMinutes = h * 60 + m + duration * 60;
+    const endH = Math.floor(totalMinutes / 60);
+    const endM = totalMinutes % 60;
+    const endTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+
     setLoading(true);
     try {
       await api.post('/reservations', {
@@ -41,82 +61,121 @@ export default function ReservationForm({ courtId, courtName, onClose, onSuccess
       onSuccess?.();
       onClose?.();
     } catch (e) {
-      setError(e.response?.data?.error || 'Nie udało się złożyć rezerwacji');
+      setError(e.response?.data?.error || 'Nie udało się złożyć rezerwacji (możliwy konflikt)');
     } finally {
       setLoading(false);
     }
   };
 
+  const selectedCourtObj = courtId ? { price_per_hour: courtPrice } : courts.find(c => c.id === Number(selectedCourt));
+  const price = selectedCourtObj ? Number(selectedCourtObj.price_per_hour) * duration : 0;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="card w-full max-w-md p-6 relative">
-        {/* Close */}
-        <button onClick={onClose} className="absolute top-4 right-4 text-muted hover:text-white">
-          <X size={18} />
+      <div className="card w-full max-w-2xl p-6 sm:p-8 relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-muted hover:text-white p-2">
+          <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold mb-1 text-[#e8f5ee]">Nowa rezerwacja</h2>
-        {courtName && <p className="text-sm text-muted mb-5">{courtName}</p>}
+        <h2 className="text-2xl font-bold mb-1 text-[#e8f5ee]">Nowa rezerwacja</h2>
+        {courtName && <p className="text-sm text-tennis-400 font-medium mb-6">{courtName}</p>}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Court select (jeśli nie przekazano) */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           {!courtId && (
             <div>
-              <label className="label">Kort</label>
-              <select
-                className="input"
-                value={selectedCourt}
-                onChange={e => setSC(e.target.value)}
-              >
+              <label className="label mb-2">Kort</label>
+              <select className="input" value={selectedCourt} onChange={e => setSC(e.target.value)}>
                 <option value="">Wybierz kort…</option>
-                {courts.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
+                {courts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
           )}
 
-          {/* Date */}
+          {/* Pasek z datami */}
           <div>
-            <label className="label flex items-center gap-1"><CalendarDays size={12} /> Data</label>
-            <input
-              type="date"
-              className="input"
-              min={today}
-              value={date}
-              onChange={e => setDate(e.target.value)}
-            />
+            <label className="label mb-3 flex items-center gap-1"><CalendarDays size={14} /> Wybierz dzień</label>
+            <div 
+              className="flex gap-3 overflow-x-auto pb-2 snap-x"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {days.map(d => {
+                const active = date === d.dateStr;
+                return (
+                  <button
+                    key={d.dateStr}
+                    type="button"
+                    onClick={() => setDate(d.dateStr)}
+                    className={`snap-start shrink-0 flex flex-col items-center justify-center w-20 h-20 rounded-2xl border transition-all ${
+                      active ? 'bg-tennis-500/20 border-tennis-500 text-tennis-400' : 'bg-[#0a0f0d] border-[#1e3028] text-muted hover:border-tennis-700 hover:text-white'
+                    }`}
+                  >
+                    <span className="text-xs uppercase font-medium">{d.dayName}</span>
+                    <span className={`text-2xl font-bold ${active ? 'text-white' : ''}`}>{d.dayNum}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Times */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="label flex items-center gap-1"><Clock size={12} /> Od</label>
-              <select className="input" value={startTime} onChange={e => setStart(e.target.value)}>
-                <option value="">--</option>
-                {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
+          {/* Czas i Długość trwania */}
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-1">
+              <label className="label mb-3 flex items-center gap-1"><Clock size={14} /> Czas rozpoczęcia</label>
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                {HOURS.map(h => (
+                  <button
+                    key={h}
+                    type="button"
+                    onClick={() => setStart(h)}
+                    className={`py-2 text-sm rounded-xl border transition-all ${
+                      startTime === h ? 'bg-tennis-500 text-white border-tennis-500 font-bold' : 'bg-[#0a0f0d] border-[#1e3028] text-muted hover:border-tennis-700 hover:text-white'
+                    }`}
+                  >
+                    {h}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div>
-              <label className="label flex items-center gap-1"><Clock size={12} /> Do</label>
-              <select className="input" value={endTime} onChange={e => setEnd(e.target.value)}>
-                <option value="">--</option>
-                {HOURS.filter(h => h > startTime).map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
+
+            <div className="md:w-1/3">
+              <label className="label mb-3">Czas trwania</label>
+              <div className="flex flex-col gap-2">
+                {DURATIONS.map(dur => (
+                  <button
+                    key={dur}
+                    type="button"
+                    onClick={() => setDuration(dur)}
+                    className={`py-3.5 text-sm rounded-xl border flex items-center justify-center gap-2 transition-all ${
+                      duration === dur ? 'bg-[#0d1a10] border-tennis-500 text-tennis-400 font-bold shadow-[0_0_15px_rgba(34,197,94,0.1)]' : 'bg-[#0a0f0d] border-[#1e3028] text-muted hover:border-tennis-700 hover:text-white'
+                    }`}
+                  >
+                    {duration === dur && <Check size={16} />} {dur} h
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {error && (
-            <div className="text-sm text-red-400 border border-red-500/20 rounded-xl bg-red-500/10 px-4 py-2">
+            <div className="text-sm text-red-400 border border-red-500/20 rounded-xl bg-red-500/10 px-4 py-3">
               {error}
             </div>
           )}
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="btn-ghost flex-1">Anuluj</button>
-            <button type="submit" className="btn-primary flex-1" disabled={loading}>
-              {loading ? 'Rezerwuję…' : 'Zarezerwuj'}
-            </button>
+          {/* Podsumowanie i potwierdzenie */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2 pt-6 border-t border-[#1e3028]">
+            <div>
+              <p className="text-xs text-muted mb-1 font-medium uppercase tracking-wide">Całkowity koszt</p>
+              <p className="text-3xl font-extrabold text-[#e8f5ee]">
+                {price > 0 ? `${price} zł` : '--'}
+              </p>
+            </div>
+            <div className="flex gap-3 w-full sm:w-auto">
+              <button type="button" onClick={onClose} className="btn-ghost flex-1 sm:flex-none px-6 py-3">Anuluj</button>
+              <button type="submit" className="btn-primary flex-1 sm:flex-none px-8 py-3 text-sm" disabled={loading}>
+                {loading ? 'Rezerwuję…' : 'Zarezerwuj teraz'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

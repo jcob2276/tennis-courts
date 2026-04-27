@@ -157,6 +157,7 @@ export default function CourtsPage() {
         <ReservationForm
           courtId={preselect}
           courtName={courts.find(c => c.id === preselect)?.name}
+          courtPrice={courts.find(c => c.id === preselect)?.price_per_hour}
           onClose={() => setShowForm(false)}
           onSuccess={() => { setShowForm(false); }}
         />
