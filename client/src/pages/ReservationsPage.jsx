@@ -51,7 +51,7 @@ export default function ReservationsPage() {
         <div className="flex justify-center py-20 text-muted">Ładowanie rezerwacji…</div>
       ) : reservations.length === 0 ? (
         <div className="card p-12 text-center">
-          <div className="text-4xl mb-3">📅</div>
+          <div className="text-4xl mb-3 font-bold text-tennis-400">R</div>
           <p className="text-muted">Brak aktywnych rezerwacji</p>
           <button className="btn-primary mt-4" onClick={() => setShowForm(true)}>Zarezerwuj kort</button>
         </div>

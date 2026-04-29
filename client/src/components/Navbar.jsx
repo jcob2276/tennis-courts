@@ -29,7 +29,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/courts" className="flex items-center gap-2 font-bold text-tennis-400 text-lg">
-          <span className="text-2xl">🎾</span>
+          <span className="text-2xl font-bold">T</span>
           <span className="hidden sm:inline text-[#e8f5ee]">TennisCourts</span>
         </Link>
 

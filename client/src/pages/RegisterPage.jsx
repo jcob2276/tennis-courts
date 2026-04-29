@@ -28,7 +28,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-br from-[#0a0f0d] via-[#0d1a10] to-[#0a0f0d]">
       <div className="mb-8 text-center">
-        <div className="text-4xl mb-2">🎾</div>
+        <div className="text-4xl mb-2 font-bold text-tennis-400">T</div>
         <h1 className="text-2xl font-extrabold text-[#e8f5ee]">TennisCourts</h1>
       </div>
 

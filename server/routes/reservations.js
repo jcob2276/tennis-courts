@@ -7,7 +7,7 @@ const { requireRole } = require('../middleware/role');
 const router = express.Router();
 
 // ── GET /api/reservations ───────────────────────────────────────
-// USER → swoje | MOD/ADMIN → wszystkie
+// USER -> swoje | MOD/ADMIN -> wszystkie
 router.get('/', verifyToken, async (req, res) => {
   try {
     let result;
@@ -98,7 +98,7 @@ router.post('/', verifyToken, requireRole('USER', 'MOD', 'ADMIN'), [
 });
 
 // ── DELETE /api/reservations/:id ───────────────────────────────
-// USER → tylko swoja | MOD/ADMIN → każda
+// USER -> tylko swoja | MOD/ADMIN -> każda
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const result = await pool.query(

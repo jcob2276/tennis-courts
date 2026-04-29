@@ -71,9 +71,9 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="mb-10 text-center lg:text-left">
-            <div className="text-5xl mb-4 lg:hidden">🎾</div>
+            <div className="text-5xl mb-4 lg:hidden font-bold text-tennis-400">T</div>
             <h1 className="text-4xl font-extrabold text-[#e8f5ee] tracking-tight flex items-center gap-3 lg:justify-start justify-center">
-              <span className="hidden lg:inline text-4xl">🎾</span>
+              <span className="hidden lg:inline text-4xl font-bold text-tennis-400">T</span>
               TennisCourts
             </h1>
             <p className="text-muted text-base mt-2">Zaloguj się, aby zarządzać rezerwacjami.</p>
@@ -82,7 +82,7 @@ export default function LoginPage() {
           {/* Test accounts */}
           <div className="card p-5 mb-6">
           <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
-            🧪 Konta testowe — kliknij aby zalogować
+            Konta testowe — kliknij aby zalogować
           </p>
           <div className="flex flex-col gap-2">
             {TEST_ACCOUNTS.map((acc) => (

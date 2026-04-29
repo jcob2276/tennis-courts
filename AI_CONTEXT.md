@@ -1,8 +1,8 @@
-# 🤖 Context for AI Assistants (TennisCourts)
+# Context for AI Assistants (TennisCourts)
 
 This file serves as the primary system prompt and context reference for any AI agent or LLM working on this repository. Read this entirely before making architectural changes.
 
-## 🏗 System Architecture Overview
+## System Architecture Overview
 
 TennisCourts is a production-ready, full-stack web application designed for booking tennis courts. It strictly follows a decoupled client-server architecture.
 
@@ -15,7 +15,7 @@ TennisCourts is a production-ready, full-stack web application designed for book
 - **Key UX Patterns:** 
   - Brutalist/Dark UI (`#0a0f0d` backgrounds, neon green/tennis accents).
   - *One-Click Booking:* Native HTML inputs (`<select>`, `<input type="date">`) were intentionally replaced with modern React grids (e.g., horizontal date scrolling, duration toggle buttons).
-  - *State Management:* React Router's state and local component state (`useState`) are preferred over complex state libraries like Redux to keep the MVP lightweight.
+  - *State Management:** React Router's state and local component state (`useState`) are preferred over complex state libraries like Redux to keep the MVP lightweight.
 
 ### 2. Backend (Server)
 - **Tech Stack:** Node.js, Express.js, `pg` (PostgreSQL client), `jsonwebtoken`, `bcrypt`.
@@ -35,7 +35,7 @@ TennisCourts is a production-ready, full-stack web application designed for book
 
 ---
 
-## 🔐 Security & Data Flow
+## Security & Data Flow
 
 The application implements a strict **3-Layer Validation Strategy**:
 1. **Frontend:** React form validation and UI constraints (e.g., preventing selecting dates in the past).
@@ -53,7 +53,7 @@ The application implements a strict **3-Layer Validation Strategy**:
 
 ---
 
-## ☁️ External Integrations
+## External Integrations
 
 ### OpenWeatherMap API
 - **Endpoint:** `server/routes/weather.js`
@@ -62,7 +62,7 @@ The application implements a strict **3-Layer Validation Strategy**:
 
 ---
 
-## 🛠 AI Development Guidelines for this project
+## AI Development Guidelines for this project
 
 1. **Do not use native HTML form controls** (`<select>`, `<input type="date">`, `<input type="time">`) for core user flows. The app uses custom UI grids for better UX.
 2. **Maintain the styling:** Use Tailwind utility classes. The primary background is `#0a0f0d`, borders are `#1e3028`, and the primary brand color is `tennis-400` / `tennis-500` (neon green defined in `tailwind.config.js`).

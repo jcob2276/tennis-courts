@@ -8,7 +8,7 @@ const pool   = require('./index');
 const SALT_ROUNDS = 12;
 
 async function seed() {
-  console.log('🌱 Seeding bazy danych...\n');
+  console.log('Seeding bazy danych...\n');
 
   // Hash wspólnego hasła raz
   const hash = await bcrypt.hash('haslo123', SALT_ROUNDS);
@@ -34,7 +34,7 @@ async function seed() {
     ON CONFLICT DO NOTHING
   `);
 
-  console.log('✅ Seed zakończony!\n');
+  console.log('Seed zakończony!\n');
   console.log('Konta testowe:');
   console.log('  test_gracz@tennis.pl  / haslo123  → USER');
   console.log('  test_mod@tennis.pl    / haslo123  → MOD');
@@ -44,6 +44,6 @@ async function seed() {
 }
 
 seed().catch(err => {
-  console.error('❌ Seed error:', err.message);
+  console.error('Seed error:', err.message);
   process.exit(1);
 });

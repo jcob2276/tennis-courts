@@ -6,7 +6,7 @@ import { Layers, DollarSign, Calendar } from 'lucide-react';
 
 const SURFACE_LABEL = { clay: 'Ceglasta', hard: 'Twarda', grass: 'Trawa' };
 const SURFACE_COLOR = { clay: 'text-orange-400', hard: 'text-blue-400', grass: 'text-tennis-400' };
-const SURFACE_EMOJI = { clay: '🟧', hard: '🟦', grass: '🟩' };
+// SURFACE_EMOJI removed
 const SURFACE_BORDER = { clay: 'border-orange-500/30 hover:border-orange-500/80', hard: 'border-blue-500/30 hover:border-blue-500/80', grass: 'border-tennis-500/30 hover:border-tennis-500/80' };
 const SURFACE_IMAGE = {
   clay: 'https://images.unsplash.com/photo-1599586120429-48281b6f0ece?auto=format&fit=crop&q=80&w=600',
@@ -47,7 +47,7 @@ export default function CourtCard({ court, onDeleted, onReserve }) {
               {court.name}
             </h3>
             <span className={`text-sm font-medium ${SURFACE_COLOR[court.surface]}`}>
-              {SURFACE_EMOJI[court.surface]} {SURFACE_LABEL[court.surface]}
+              {SURFACE_LABEL[court.surface]}
             </span>
           </div>
           <div className="flex items-end flex-col">

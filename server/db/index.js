@@ -22,13 +22,13 @@ async function initDb() {
   try {
     const res = await pool.query("SELECT to_regclass('public.users') as exists");
     if (!res.rows[0].exists) {
-      console.log('🌱 Inicjalizacja schematu bazy danych (PostgreSQL)...');
+      console.log('Inicjalizacja schematu bazy danych (PostgreSQL)...');
       
       const schemaPath = path.join(__dirname, 'schema.sql');
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
       await pool.query(schemaSql);
       
-      console.log('🌱 Tworzenie danych testowych (seed)...');
+      console.log('Tworzenie danych testowych (seed)...');
       const hash = await bcrypt.hash('haslo123', 10);
       
       const addU = 'INSERT INTO users (email, password_hash, name, role) VALUES ($1, $2, $3, $4)';
@@ -41,12 +41,12 @@ async function initDb() {
       await pool.query(addC, ['Kort Twardy nr 1', 'hard', 60, 'Nawierzchnia twarda — idealna do szybkiej gry serwisowej.']);
       await pool.query(addC, ['Kort Trawiasty VIP', 'grass', 100, 'Ekskluzywny kort trawiasty. Rezerwacja min. 24h wcześniej.']);
       
-      console.log('✅ Baza PostgreSQL gotowa! test_gracz / test_mod / test_admin — hasło: haslo123');
+      console.log('Baza PostgreSQL gotowa! test_gracz / test_mod / test_admin — hasło: haslo123');
     } else {
-      console.log('✅ Baza PostgreSQL znaleziona i podłączona.');
+      console.log('Baza PostgreSQL znaleziona i podłączona.');
     }
   } catch (err) {
-    console.error('❌ Błąd połączenia z PostgreSQL:', err.message);
+    console.error('Błąd połączenia z PostgreSQL:', err.message);
     console.error('Sprawdź DATABASE_URL w pliku .env!');
   }
 }

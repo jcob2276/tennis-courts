@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link to="/courts" className="flex items-center gap-2 font-bold text-tennis-400 text-xl mb-4">
-              <span className="text-2xl">🎾</span>
+              <span className="text-2xl font-bold text-tennis-400">T</span>
               <span className="text-[#e8f5ee]">TennisCourts</span>
             </Link>
             <p className="text-muted text-sm leading-relaxed mb-6">

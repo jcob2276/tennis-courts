@@ -8,9 +8,9 @@ import { Search, Plus } from 'lucide-react';
 
 const SURFACES = [
   { value: '',      label: 'Wszystkie' },
-  { value: 'clay',  label: '🟧 Ceglasta' },
-  { value: 'hard',  label: '🟦 Twarda' },
-  { value: 'grass', label: '🟩 Trawa' },
+  { value: 'clay',  label: 'Ceglasta' },
+  { value: 'hard',  label: 'Twarda' },
+  { value: 'grass', label: 'Trawa' },
 ];
 
 export default function CourtsPage() {
@@ -89,7 +89,7 @@ export default function CourtsPage() {
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
           <input
             className="input pl-9"
-            placeholder="Szukaj kortu…"
+            placeholder="Szukaj kortu..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -137,7 +137,7 @@ export default function CourtsPage() {
             {addError && <div className="sm:col-span-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2">{addError}</div>}
             <div className="sm:col-span-2 flex gap-3">
               <button type="button" className="btn-ghost" onClick={() => setShowAddForm(false)}>Anuluj</button>
-              <button type="submit" className="btn-primary" disabled={adding}>{adding ? 'Dodaję…' : 'Dodaj kort'}</button>
+              <button type="submit" className="btn-primary" disabled={adding}>{adding ? 'Dodaję...' : 'Dodaj kort'}</button>
             </div>
           </form>
         </div>
@@ -145,7 +145,7 @@ export default function CourtsPage() {
 
       {/* Grid */}
       {loading ? (
-        <div className="flex justify-center py-20 text-muted">Ładowanie kortów…</div>
+        <div className="flex justify-center py-20 text-muted">Ładowanie kortów...</div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 text-muted">Brak kortów spełniających kryteria</div>
       ) : (
@@ -168,22 +168,22 @@ export default function CourtsPage() {
       <div className="mt-16 mb-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
-            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">🚗</div>
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl font-bold">P</div>
             <h4 className="font-bold text-[#e8f5ee]">Darmowy Parking</h4>
             <p className="text-xs text-muted mt-2">Dla wszystkich graczy</p>
           </div>
           <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
-            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">🚿</div>
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl font-bold">S</div>
             <h4 className="font-bold text-[#e8f5ee]">Szatnie i Prysznice</h4>
             <p className="text-xs text-muted mt-2">Nowoczesne zaplecze sanitarne</p>
           </div>
           <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
-            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">🎾</div>
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl font-bold">R</div>
             <h4 className="font-bold text-[#e8f5ee]">Wypożyczalnia</h4>
             <p className="text-xs text-muted mt-2">Rakiety i piłki w recepcji</p>
           </div>
           <div className="bg-[#0d1a10] border border-[#1e3028] p-6 rounded-2xl flex flex-col items-center text-center transition-transform hover:-translate-y-1">
-            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl">💡</div>
+            <div className="w-12 h-12 bg-tennis-500/10 text-tennis-400 rounded-full flex items-center justify-center mb-4 text-xl font-bold">L</div>
             <h4 className="font-bold text-[#e8f5ee]">Oświetlenie LED</h4>
             <p className="text-xs text-muted mt-2">Komfortowa gra wieczorami</p>
           </div>
@@ -194,7 +194,7 @@ export default function CourtsPage() {
       <div className="mt-16 rounded-2xl overflow-hidden border border-[#1e3028] bg-[#0a0f0d]">
         <div className="p-6 border-b border-[#1e3028]">
           <h3 className="text-xl font-bold text-[#e8f5ee] flex items-center gap-2">
-            📍 Nasza lokalizacja
+            Nasza lokalizacja
           </h3>
           <p className="text-sm text-muted mt-1">Kompleks Tenisowy Warszawianka, ul. Piaseczyńska 71, Warszawa</p>
         </div>

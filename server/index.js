@@ -27,6 +27,6 @@ app.get('/api/health', (_req, res) =>
 app.use((_req, res) => res.status(404).json({ error: 'Endpoint nie istnieje' }));
 
 app.listen(PORT, () => {
-  console.log(`🎾 Server running → http://localhost:${PORT}`);
-  console.log(`📋 Health check  → http://localhost:${PORT}/api/health`);
+  console.log(`Server running -> http://localhost:${PORT}`);
+  console.log(`Health check  -> http://localhost:${PORT}/api/health`);
 });
