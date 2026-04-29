@@ -3,7 +3,7 @@
  * Uruchom: node db/seed.js
  */
 const bcrypt = require('bcrypt');
-const pool   = require('./index');
+const { pool, query } = require('./index');
 
 const SALT_ROUNDS = 12;
 
@@ -14,7 +14,7 @@ async function seed() {
   const hash = await bcrypt.hash('haslo123', SALT_ROUNDS);
 
   // ── Użytkownicy ──────────────────────────────────────────────
-  await pool.query(`
+  await query(`
     INSERT INTO users (email, password_hash, name, role) VALUES
       ('test_gracz@tennis.pl', $1, 'Test Gracz',      'USER'),
       ('test_mod@tennis.pl',   $1, 'Test Moderator',  'MOD'),
@@ -23,7 +23,7 @@ async function seed() {
   `, [hash]);
 
   // ── Korty ─────────────────────────────────────────────────────
-  await pool.query(`
+  await query(`
     INSERT INTO courts (name, surface, price_per_hour, description) VALUES
       ('Kort Centralny',    'clay',  80.00,
        'Główny kort z trybuną. Nawierzchnia ceglasta, profesjonalne oświetlenie LED.'),
