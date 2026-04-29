@@ -8,12 +8,15 @@ const { pool, query } = require('./index');
 const SALT_ROUNDS = 12;
 
 async function seed() {
-  console.log('Seeding bazy danych...\n');
+  console.log('Rozpoczynam zasilanie bazy danych (Seeding)...\n');
 
-  // Hash wspólnego hasła raz
+  // Hashujemy hasło 'haslo123'. 
+  // Robimy to tylko raz na początku, żeby nie obciążać procesora.
   const hash = await bcrypt.hash('haslo123', SALT_ROUNDS);
 
-  // ── Użytkownicy ──────────────────────────────────────────────
+  // --- TWORZENIE UŻYTKOWNIKÓW ---
+  // Używamy ON CONFLICT DO NOTHING, żeby skrypt się nie wywalił, 
+  // jeśli te konta już istnieją w bazie.
   await query(`
     INSERT INTO users (email, password_hash, name, role) VALUES
       ('test_gracz@tennis.pl', $1, 'Test Gracz',      'USER'),
@@ -22,7 +25,7 @@ async function seed() {
     ON CONFLICT (email) DO NOTHING
   `, [hash]);
 
-  // ── Korty ─────────────────────────────────────────────────────
+  // --- TWORZENIE KORTÓW ---
   await query(`
     INSERT INTO courts (name, surface, price_per_hour, description) VALUES
       ('Kort Centralny',    'clay',  80.00,
@@ -34,12 +37,10 @@ async function seed() {
     ON CONFLICT DO NOTHING
   `);
 
-  console.log('Seed zakończony!\n');
-  console.log('Konta testowe:');
-  console.log('  test_gracz@tennis.pl  / haslo123  → USER');
-  console.log('  test_mod@tennis.pl    / haslo123  → MOD');
-  console.log('  test_admin@tennis.pl  / haslo123  → ADMIN');
+  console.log('Seed zakończony pomyślnie!\n');
+  console.log('Możesz się teraz zalogować na konta testowe (hasło: haslo123)');
 
+  // Zamykamy połączenie z bazą, inaczej skrypt będzie "wisiał" w konsoli
   await pool.end();
 }
 
