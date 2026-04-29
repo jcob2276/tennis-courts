@@ -4,31 +4,39 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 
+// Tworzymy "Pool" - to jest pula połączeń. 
+// Zamiast otwierać nowe połączenie do bazy przy każdym zapytaniu (co jest wolne),
+// serwer trzyma kilka otwartych i używa ich wielokrotnie.
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Railway często wymaga ssl dla połączeń zewnętrznych
+  // Ważne: Chmury typu Railway wymagają SSL (szyfrowania) dla połączeń z zewnątrz.
   ssl: process.env.DATABASE_URL?.includes('railway') || process.env.NODE_ENV === 'production' 
        ? { rejectUnauthorized: false } 
        : false
 });
 
-// Własny wrapper ułatwiający przejście z SQLite, ale i tak używamy czystego pg
+// Ułatwienie: query to funkcja, którą będziemy importować w trasach.
 const query = async (text, params) => {
   return await pool.query(text, params);
 };
 
-// Auto-inicjalizacja bazy przy starcie serwera (przydatne na Railway)
+// AUTO-INICJALIZACJA BAZY
+// To jest sprytny mechanizm, który sprawdza czy tabele istnieją.
+// Jeśli nie (np. przy pierwszym uruchomieniu na serwerze), sam je stworzy.
 async function initDb() {
   try {
+    // Sprawdzamy czy istnieje tabela 'users'
     const res = await pool.query("SELECT to_regclass('public.users') as exists");
+    
     if (!res.rows[0].exists) {
-      console.log('Inicjalizacja schematu bazy danych (PostgreSQL)...');
+      console.log('--- Inicjalizacja bazy danych (PostgreSQL) ---');
       
+      // Wczytujemy przepis na bazę z pliku schema.sql
       const schemaPath = path.join(__dirname, 'schema.sql');
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
       await pool.query(schemaSql);
       
-      console.log('Tworzenie danych testowych (seed)...');
+      console.log('--- Tworzenie kont testowych ---');
       const hash = await bcrypt.hash('haslo123', 10);
       
       const addU = 'INSERT INTO users (email, password_hash, name, role) VALUES ($1, $2, $3, $4)';
@@ -37,21 +45,19 @@ async function initDb() {
       await pool.query(addU, ['test_admin@tennis.pl', hash, 'Test Admin', 'ADMIN']);
 
       const addC = 'INSERT INTO courts (name, surface, price_per_hour, description) VALUES ($1, $2, $3, $4)';
-      await pool.query(addC, ['Kort Centralny', 'clay', 80, 'Główny kort z trybuną. Ceglasta nawierzchnia, oświetlenie LED.']);
-      await pool.query(addC, ['Kort Twardy nr 1', 'hard', 60, 'Nawierzchnia twarda — idealna do szybkiej gry serwisowej.']);
-      await pool.query(addC, ['Kort Trawiasty VIP', 'grass', 100, 'Ekskluzywny kort trawiasty. Rezerwacja min. 24h wcześniej.']);
+      await pool.query(addC, ['Kort Centralny', 'clay', 80, 'Główny kort z trybuną. Ceglasta nawierzchnia.']);
+      await pool.query(addC, ['Kort Twardy nr 1', 'hard', 60, 'Szybka nawierzchnia twarda.']);
       
-      console.log('Baza PostgreSQL gotowa! test_gracz / test_mod / test_admin — hasło: haslo123');
+      console.log('Baza danych gotowa do pracy!');
     } else {
-      console.log('Baza PostgreSQL znaleziona i podłączona.');
+      console.log('Połączono z bazą PostgreSQL.');
     }
   } catch (err) {
-    console.error('Błąd połączenia z PostgreSQL:', err.message);
-    console.error('Sprawdź DATABASE_URL w pliku .env!');
+    console.error('BŁĄD POŁĄCZENIA Z BAZĄ:', err.message);
   }
 }
 
-// Inicjuj bazę od razu po załadowaniu modułu
+// Uruchamiamy sprawdzanie bazy przy starcie serwera
 initDb();
 
 module.exports = {
