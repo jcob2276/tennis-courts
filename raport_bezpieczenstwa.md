@@ -1,41 +1,68 @@
-# Raport Bezpieczeństwa Aplikacji TennisCourts
+# Raport Bezpieczeństwa — TennisCourts
 
-Poniższy raport przedstawia główne założenia oraz zaimplementowane mechanizmy bezpieczeństwa w systemie rezerwacji kortów tenisowych (React + Node.js + PostgreSQL).
+Dokument opisuje zastosowane mechanizmy bezpieczeństwa w aplikacji do rezerwacji kortów tenisowych (React + Node.js + PostgreSQL).
 
-## 1. Zabezpieczenie sesji użytkownika (JWT)
-Aplikacja wykorzystuje **JSON Web Tokens (JWT)** do zarządzania uwierzytelnianiem i autoryzacją w trybie bezstanowym (stateless).
-- **Logowanie:** Podczas poprawnego logowania serwer generuje podpisany token, który przesyłany jest do klienta.
-- **Weryfikacja:** Tokeny są sprawdzane przed dostępem do każdej zabezpieczonej ścieżki za pomocą middleware'a `verifyToken`.
-- **Kryptografia:** Tokeny są zabezpieczone silnym sekretem serwerowym (zmienna `JWT_SECRET`). Serwer weryfikuje poprawność podpisu i czas wygaśnięcia każdego zapytania.
+---
 
-## 2. Hashowanie haseł
-Aplikacja kategorycznie **nie przechowuje haseł otwartym tekstem**.
-- **Biblioteka:** Wykorzystywany jest algorytm `bcrypt` uznawany za standard branżowy.
-- **Salt & Hash:** Podczas rejestracji hasło jest mieszane (saltowane) przed zapisem, co uniemożliwia proste ataki słownikowe czy ataki typu Rainbow Tables.
-- Podczas logowania system weryfikuje, czy hasz podanego w formularzu logowania hasła pasuje do tego odczytanego z bazy danych.
+## 1. Uwierzytelnianie — JWT
 
-## 3. Zabezpieczenie zmiennych środowiskowych i kluczy
-Klucze API i poświadczenia bazy danych nie są hardkodowane w kodzie aplikacji.
-- **Zmienne środowiskowe (.env):** Wszystkie sekrety (jak np. `DATABASE_URL`, `WEATHER_API_KEY`, `JWT_SECRET`) są przechowywane poza systemem kontroli wersji (plik `.env` jest ignorowany w `.gitignore`).
-- W przypadku kompromitacji repozytorium kodu, dane uwierzytelniające do zewnętrznych systemów pozostają bezpieczne.
+Do zarządzania sesjami użytkowników użyto tokenów JWT (JSON Web Token). Po zalogowaniu serwer generuje token podpisany kluczem `JWT_SECRET` i zwraca go klientowi. Token jest przechowywany w `localStorage` i dołączany do każdego kolejnego żądania w nagłówku `Authorization: Bearer <token>`.
 
-## 4. Trzypoziomowa Walidacja Danych
-By zminimalizować błędy, wstrzykiwanie kodu i niespójności, dane podlegają weryfikacji na wszystkich etapach wędrówki przez aplikację:
+Po stronie serwera middleware `verifyToken` sprawdza poprawność podpisu oraz datę wygaśnięcia przy każdym żądaniu do chronionych endpointów. Token jest ważny 7 dni.
 
-1. **Poziom Frontendowy (React):** 
-   - Wbudowana walidacja na poziomie formularzy (wymagane pola, min/max length, typy e-mail). Prowadzi to do szybszego doświadczenia (UX), eliminując niepotrzebne zapytania do serwera przy oczywistych błędach.
+---
 
-2. **Poziom Backendowy (API - `express-validator`):**
-   - Na wejściu do głównych endpointów, takich jak rejestracja użytkownika, wszystkie dane odbierane od klienta (parametry `req.body`) są sanitizowane oraz rygorystycznie sprawdzane, zanim jakikolwiek kod związany z bazą danych zostanie w ogóle wywołany.
+## 2. Hashowanie haseł — bcrypt
 
-3. **Poziom Bazy Danych (PostgreSQL):**
-   - **Twarde Ograniczenia (Constraints):** Na poziomie schematu SQL wprowadzono ostateczną warstwę chroniącą spójność:
-     - Klauzule `UNIQUE` (np. na e-mail) chronią przed duplikatami.
-     - Klauzule `NOT NULL` pilnują obligatoryjności pól.
-     - Ograniczenia `CHECK` zabezpieczają predefiniowane wartości (np. `CHECK (role IN ('USER', 'MOD', 'ADMIN'))` oraz enumeracje typu nawierzchni czy statusu rezerwacji). Zapewnia to integralność nawet przy ominięciu walidacji backendowej.
+Hasła użytkowników nie są nigdy przechowywane w postaci jawnej. Przy rejestracji hasło jest hashowane przez `bcrypt` z 12 rundami solenia. Przy logowaniu porównywany jest hash z bazy z hashem podanego hasła — oryginał nigdy nie trafia do bazy.
 
-## 5. Rygorystyczny System Ról i Dostępu
-System posiada precyzyjne odcięcie uprawnień oparte na rolach przypisanych do kont (Guest, USER, MOD, ADMIN).
-- **Zasada minimalnego dostępu:** Użytkownicy bez autoryzacji mogą wykonać jedynie minimalny podzbiór akcji (przeglądanie kortów).
-- **Strażnicy Routing'u (Role Guards):** Middleware `requireRole('ADMIN')` hermetycznie zamyka dostęp do ścieżek zarządzających dodawaniem i usuwaniem kortów oraz wyciągających pełną listę użytkowników. Wszelkie próby ataku na endpoint bez uprawnień (lub z kontem `USER`) kończą się odrzuceniem dostępu.
-- Użytkownicy mogą zarządzać własnymi rezerwacjami, bazując na sprawdzaniu tokenu (`req.user.id`), ale usunięcie dowolnej rezerwacji wymaga już uprawnień moderatora lub admina.
+---
+
+## 3. Klucze i dane wrażliwe
+
+Wszystkie sekrety (`DATABASE_URL`, `JWT_SECRET`, `WEATHER_API_KEY`) są przechowywane w zmiennych środowiskowych (plik `.env`), który jest wykluczony z repozytorium przez `.gitignore`. Na platformach Railway i Vercel wartości te są ustawiane bezpośrednio w panelu i wstrzykiwane do środowiska uruchomieniowego — nie ma ich w kodzie.
+
+---
+
+## 4. Walidacja danych wejściowych
+
+Dane od użytkownika są weryfikowane na trzech poziomach:
+
+- **Frontend** — podstawowa walidacja w formularzach (wymagane pola, format email, minimalna długość hasła), żeby odciąć oczywiste błędy przed wysłaniem żądania.
+- **Backend** — biblioteka `express-validator` sprawdza i oczyszcza dane w `req.body` zanim cokolwiek trafi do bazy. Np. przy rejestracji weryfikowany jest format emaila, długość hasła i imienia.
+- **Baza danych** — schemat SQL zawiera ograniczenia `NOT NULL`, `UNIQUE` (email), `CHECK` (dozwolone wartości roli, nawierzchni, statusu rezerwacji). To ostatnia linia obrony, niezależna od logiki aplikacji.
+
+---
+
+## 5. Kontrola dostępu oparta na rolach (RBAC)
+
+System definiuje trzy role: `USER`, `MOD`, `ADMIN`. Dostęp do chronionych endpointów jest kontrolowany przez middleware `requireRole()` działający po stronie serwera.
+
+Przykład — tylko ADMIN może dodawać lub usuwać korty:
+
+```js
+router.post('/courts', verifyToken, requireRole('ADMIN'), handler)
+router.delete('/courts/:id', verifyToken, requireRole('ADMIN'), handler)
+```
+
+Próba dostępu z niższą rolą skutkuje odpowiedzią `403 Forbidden`. Nawet jeśli użytkownik zmodyfikuje token po stronie klienta, serwer i tak zweryfikuje rolę na podstawie własnego klucza podpisu.
+
+Użytkownicy mogą zarządzać wyłącznie swoimi rezerwacjami — sprawdzane przez `req.user.id` w middleware.
+
+---
+
+## 6. Ochrona przed SQL Injection
+
+Wszystkie zapytania do bazy korzystają z parametryzowanych zapytań przez bibliotekę `pg`:
+
+```js
+pool.query('SELECT * FROM users WHERE email = $1', [email])
+```
+
+Dane od użytkownika nigdy nie są bezpośrednio konkatenowane z treścią zapytania SQL, co wyklucza możliwość wstrzyknięcia kodu.
+
+---
+
+## 7. CORS
+
+Serwer Express przyjmuje żądania tylko z domeny frontendu (skonfigurowanej w zmiennej `CLIENT_URL`). Żądania z innych źródeł są odrzucane na poziomie middleware CORS.

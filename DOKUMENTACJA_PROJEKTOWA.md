@@ -2,98 +2,89 @@
 
 ## 1. Wymagania Funkcjonalne
 
-Aplikacja "TennisCourts" służy do zarządzania rezerwacjami kortów tenisowych. System oferuje różne funkcjonalności w zależności od roli użytkownika:
+Aplikacja służy do rezerwacji kortów tenisowych online. Funkcje dostępne zależą od roli użytkownika:
 
-*   **Użytkownik Niezalogowany (Gość):**
-    *   Przeglądanie listy dostępnych kortów.
-    *   Podgląd szczegółów kortu (nawierzchnia, cena).
-    *   Podgląd aktualnej pogody w lokalizacji obiektu.
-*   **Gracz (Zalogowany USER):**
-    *   Rezerwacja wybranego kortu w określonym przedziale czasowym.
-    *   Automatyczne sprawdzanie kolizji (brak możliwości rezerwacji zajętego kortu).
-    *   Podgląd własnej listy rezerwacji.
-*   **Moderator (MOD):**
-    *   Podgląd wszystkich rezerwacji w systemie.
-    *   Możliwość odwoływania rezerwacji użytkowników.
-*   **Administrator (ADMIN):**
-    *   Zarządzanie katalogiem kortów (dodawanie, edycja, usuwanie).
-    *   Pełny wgląd w listę użytkowników i ich uprawnienia.
+- **Gość (niezalogowany):** przeglądanie listy kortów, podgląd nawierzchni i cen, podgląd pogody.
+- **Gracz (USER):** rejestracja konta, logowanie, rezerwacja kortu w wybranym przedziale czasowym, podgląd i anulowanie własnych rezerwacji.
+- **Moderator (MOD):** wszystko co USER + widok rezerwacji wszystkich użytkowników w systemie.
+- **Administrator (ADMIN):** wszystko co MOD + dodawanie nowych kortów, dezaktywacja kortów, anulowanie dowolnej rezerwacji, dostęp do panelu statystyk.
 
 ---
 
 ## 2. Architektura Systemu
 
-System został zbudowany w architekturze rozproszonej (Fullstack):
+Aplikacja podzielona jest na dwie niezależnie wdrożone warstwy:
 
-*   **Frontend:** React (Vite) + Tailwind CSS. Hostowany na **Vercel**.
-*   **Backend:** Node.js + Express.js. Hostowany na **Railway**.
-*   **Baza Danych:** Relacyjna baza **PostgreSQL**. Hostowana na **Railway**.
-*   **Komunikacja:** REST API z wykorzystaniem biblioteki Axios.
-*   **Autoryzacja:** Bezstanowa, oparta o tokeny **JWT (JSON Web Token)**.
-*   **Zewnętrzne API:** Integracja z **OpenWeatherMap** do pobierania danych pogodowych w czasie rzeczywistym.
+- **Frontend:** React + Vite + Tailwind CSS — hostowany na **Vercel**
+- **Backend:** Node.js + Express.js — hostowany na **Railway**
+- **Baza danych:** PostgreSQL — hostowana na **Railway** (managed)
+- **Komunikacja:** REST API, format JSON, biblioteka Axios po stronie klienta
+- **Autoryzacja:** tokeny JWT (bezstanowa, stateless)
+- **Zewnętrzne API:** OpenWeatherMap — aktualna pogoda dla lokalizacji kortów
 
----
-
-## 3. Diagramy (Kody do wygenerowania grafiki)
-
-*Wklej poniższe kody na stronie [Mermaid.live](https://mermaid.live), aby uzyskać gotowe diagramy do dokumentacji.*
-
-### A. Diagram Przypadków Użycia (Use Case)
-```mermaid
-useCaseDiagram
-    actor "Gość" as G
-    actor "Gracz" as P
-    actor "Moderator" as M
-    actor "Admin" as A
-
-    G --> (Przeglądaj korty)
-    G --> (Sprawdź pogodę)
-    
-    P --> (Logowanie / Rejestracja)
-    P --> (Rezerwuj kort)
-    P --> (Moje rezerwacje)
-    
-    M --> (Zarządzaj rezerwacjami)
-    M --> (Anuluj rezerwację)
-    
-    A --> (Zarządzaj kortami)
-    A --> (Pełny log systemu)
-```
-
-### B. Diagram Klas / Bazy Danych (Entity Relationship)
-```mermaid
-erDiagram
-    USERS ||--o{ RESERVATIONS : "posiada"
-    COURTS ||--o{ RESERVATIONS : "jest przypisany"
-    
-    USERS {
-        int id PK
-        string email UK
-        string password_hash
-        string role "USER, MOD, ADMIN"
-    }
-    
-    COURTS {
-        int id PK
-        string name
-        string surface
-        float price_per_hour
-    }
-    
-    RESERVATIONS {
-        int id PK
-        int user_id FK
-        int court_id FK
-        datetime start_time
-        datetime end_time
-    }
-```
+Każdy `git push` na branch `main` automatycznie uruchamia deployment na obu platformach (CI/CD przez GitHub webhooks).
 
 ---
 
-## 4. Bezpieczeństwo i Implementacja
+## 3. Schemat bazy danych
 
-1.  **Ochrona przed SQL Injection:** Zastosowano parametryzowane zapytania (preparedStatement) w bibliotece `pg`.
-2.  **Ochrona Haseł:** Wykorzystano algorytm haszujący **Bcrypt** (12 rund solenia).
-3.  **Zmienne Środowiskowe:** Wszystkie klucze (API KEY, DB URL, JWT SECRET) przechowywane są w plikach `.env` i nie są częścią repozytorium kodu.
-4.  **Broken Access Control:** Zaimplementowano middleware `requireRole`, który na poziomie backendu weryfikuje uprawnienia przed wykonaniem akcji.
+```
+USERS
+  id, email (UNIQUE), password_hash, name, role (USER/MOD/ADMIN), created_at
+
+COURTS
+  id, name, surface (clay/hard/grass), price_per_hour, description, is_active, created_at
+
+RESERVATIONS
+  id, user_id (FK), court_id (FK), date, start_time, end_time,
+  status (CONFIRMED/CANCELLED), created_at
+```
+
+Relacje: jeden użytkownik może mieć wiele rezerwacji, jeden kort może mieć wiele rezerwacji.
+
+Tabele używają soft delete — rekordy nie są fizycznie usuwane, tylko oznaczane jako nieaktywne (`is_active = false`) lub anulowane (`status = CANCELLED`).
+
+---
+
+## 4. Bezpieczeństwo
+
+- **SQL Injection:** parametryzowane zapytania (`$1`, `$2`) przez bibliotekę `pg`
+- **Hasła:** hashowanie bcrypt, 12 rund solenia, nigdy plain text w bazie
+- **Autoryzacja:** middleware `verifyToken` + `requireRole()` na każdym chronionym endpoincie
+- **Sekrety:** zmienne środowiskowe (`.env`), wykluczone z repo przez `.gitignore`
+- **CORS:** serwer akceptuje żądania tylko z domeny frontendu
+
+---
+
+## 5. Uruchomienie lokalne
+
+Wymagania: Node.js, dostęp do bazy PostgreSQL.
+
+**Backend:**
+```bash
+cd server
+npm install
+# skopiuj server/.env.example do server/.env i uzupełnij DATABASE_URL, JWT_SECRET, WEATHER_API_KEY
+npm run dev
+# serwer: http://localhost:3001
+```
+
+**Frontend:**
+```bash
+cd client
+npm install
+npm run dev
+# klient: http://localhost:5173
+```
+
+Baza danych (tabele + dane testowe) tworzy się automatycznie przy pierwszym uruchomieniu serwera.
+
+---
+
+## 6. Konta testowe
+
+| Rola | Email | Hasło |
+|------|-------|-------|
+| USER | `test_gracz@tennis.pl` | `haslo123` |
+| MOD | `test_mod@tennis.pl` | `haslo123` |
+| ADMIN | `test_admin@tennis.pl` | `haslo123` |
